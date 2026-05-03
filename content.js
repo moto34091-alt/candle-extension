@@ -1,5 +1,4 @@
-// marteau
-        if (isHammer(c3)) {
+if (isHammer(c3)) {
             return {
                 signal: "🟢 BUY",
                 confidence: 78,
@@ -15,7 +14,6 @@
             };
         }
 
-        // engulfing
         if (isBullishEngulfing(c2, c3)) {
             return {
                 signal: "🟢 BUY",
@@ -64,7 +62,9 @@
             result.confidence >= 80 &&
             lastSignal !== result.signal
         ) {
-            navigator.vibrate?.([200, 100, 200]);
+            if (navigator.vibrate) {
+                navigator.vibrate([200, 100, 200]);
+            }
             lastSignal = result.signal;
         }
     }, 1500);

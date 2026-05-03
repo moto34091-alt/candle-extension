@@ -1,13 +1,13 @@
 {
   "manifest_version": 3,
-  "name": "Momentum Signal AI",
+  "name": "BOUGIE AI PRO",
   "version": "1.0",
-  "description": "Analyse tendance + momentum sur graphique",
-  "permissions": ["activeTab", "scripting"],
+  "description": "Trading helper overlay",
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
       "js": ["content.js"]
     }
-  ]
+  ],
+  "permissions": ["activeTab"]
 }

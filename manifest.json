@@ -1,11 +1,12 @@
 {
   "manifest_version": 3,
-  "name": "Candle Signal Pro",
+  "name": "Momentum Signal AI",
   "version": "1.0",
+  "description": "Analyse tendance + momentum sur graphique",
   "permissions": ["activeTab", "scripting"],
   "content_scripts": [
     {
-      "matches": ["*://*.pocketoption.com/*"],
+      "matches": ["<all_urls>"],
       "js": ["content.js"]
     }
   ]

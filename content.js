@@ -2,7 +2,7 @@
     if (window.MOMO_RSI_RUNNING) return;
     window.MOMO_RSI_RUNNING = true;
 
-    // 🧱 BOX UI
+    // UI
     let box = document.createElement("div");
     box.style.position = "fixed";
     box.style.bottom = "90px";
@@ -17,7 +17,6 @@
     box.style.textAlign = "center";
     document.body.appendChild(box);
 
-    // 📥 PRICES
     function getPrices() {
         let text = document.body.innerText || "";
         let matches = text.match(/\b\d+\.\d{3,5}\b/g);
@@ -25,13 +24,11 @@
         return matches.slice(-100).map(Number);
     }
 
-    // 📈 MOMENTUM 10
     function getMomentum10(prices) {
         if (prices.length < 11) return 0;
         return prices[prices.length - 1] - prices[prices.length - 11];
     }
 
-    // 📊 RSI 14
     function getRSI14(prices) {
         if (prices.length < 15) return 50;
 
@@ -40,7 +37,6 @@
 
         for (let i = prices.length - 14; i < prices.length; i++) {
             let diff = prices[i] - prices[i - 1];
-
             if (diff > 0) gains += diff;
             else losses -= diff;
         }
@@ -51,7 +47,6 @@
         return 100 - (100 / (1 + rs));
     }
 
-    // 🧠 ANALYSE
     function analyze(prices) {
         let momentum = getMomentum10(prices);
         let rsi = getRSI14(prices);
@@ -68,13 +63,10 @@
         return { signal: "⚠️ WAIT", confidence: 40 };
     }
 
-    // 🎯 CLICK BUY (manuel)
     function clickBuy() {
         let elements = document.querySelectorAll("*");
-
         for (let el of elements) {
             let t = (el.innerText || "").toLowerCase();
-
             if (
                 t.includes("call") ||
                 t.includes("buy") ||
@@ -86,13 +78,10 @@
         }
     }
 
-    // 🎯 CLICK SELL (manuel)
     function clickSell() {
         let elements = document.querySelectorAll("*");
-
         for (let el of elements) {
             let t = (el.innerText || "").toLowerCase();
-
             if (
                 t.includes("put") ||
                 t.includes("sell") ||
@@ -104,7 +93,6 @@
         }
     }
 
-    // 🔁 LOOP (avec délai pour éviter bugs de chargement)
     setTimeout(() => {
         setInterval(() => {
 
@@ -119,6 +107,7 @@
             let rsi = getRSI14(prices);
             let momentum = getMomentum10(prices);
 
+            // ✅ HTML CORRECT AVEC BACKTICKS
             box.innerHTML = 
                 <b style="color:#00e5ff;">MOMO RSI MANUAL</b><br>
                 ${result.signal}<br>
@@ -135,7 +124,9 @@
             let sellBtn = document.getElementById("sellBtn");
 
             if (buyBtn) buyBtn.onclick = clickBuy;
-            if (sellBtn) sellBtn.onclick = clickSell;}, 1200);
+            if (sellBtn) sellBtn.onclick = clickSell;
+
+        }, 1200);
     }, 3000);
 
 })();

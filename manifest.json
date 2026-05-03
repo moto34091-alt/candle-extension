@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "MOMO RSI MANUAL",
-  "version": "1.3",
-  "description": "Momentum + RSI (Manual Trading Only)",
+  "name": "MOMO RSI MANUAL CLEAN",
+  "version": "1.0",
+  "description": "Momentum + RSI (Manual Trading)",
   "permissions": ["activeTab", "scripting"],
   "host_permissions": ["https://pocketoption.com/*"],
   "content_scripts": [

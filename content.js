@@ -3,30 +3,35 @@
     if (window.MOMO_ATR_RUNNING) return;
     window.MOMO_ATR_RUNNING = true;
 
-    // =========================
-    // BOX UI
-    // =========================
-    let box = document.createElement("div");
+    // =====================================
+    // CREATE PANEL
+    // =====================================
+    const box = document.createElement("div");
+
+    box.id = "momoAtrPro";
 
     box.style.position = "fixed";
-    box.style.bottom = "90px";
-    box.style.right = "10px";
-    box.style.padding = "10px";
-    box.style.background = "rgba(0,0,0,0.85)";
-    box.style.color = "#fff";
-    box.style.fontSize = "12px";
-    box.style.borderRadius = "10px";
+    box.style.top = "20px";
+    box.style.right = "20px";
+    box.style.width = "260px";
+    box.style.background = "rgba(15,15,20,0.96)";
+    box.style.backdropFilter = "blur(12px)";
+    box.style.border = "1px solid rgba(255,255,255,0.08)";
+    box.style.borderRadius = "18px";
+    box.style.padding = "16px";
     box.style.zIndex = "999999";
-    box.style.minWidth = "170px";
-    box.style.textAlign = "center";
-    box.style.fontFamily = "Arial";
+    box.style.fontFamily = "Arial, sans-serif";
+    box.style.color = "white";
+    box.style.boxShadow = "0 0 25px rgba(0,0,0,0.4)";
 
     document.body.appendChild(box);
 
-    // =========================
+    // =====================================
     // GET PRICES
-    // =========================
+    // =====================================
     function getPrices() {
+
+        const candles = document.querySelectorAll("canvas");
 
         let text = document.body.innerText || "";
 
@@ -34,12 +39,12 @@
 
         if (!matches) return [];
 
-        return matches.slice(-100).map(Number);
+        return matches.slice(-120).map(Number);
     }
 
-    // =========================
-    // MOMENTUM 10
-    // =========================
+    // =====================================
+    // MOMENTUM
+    // =====================================
     function getMomentum10(prices) {
 
         if (prices.length < 11) return 0;
@@ -47,9 +52,9 @@
         return prices[prices.length - 1] - prices[prices.length - 11];
     }
 
-    // =========================
-    // ATR 14
-    // =========================
+    // =====================================
+    // ATR
+    // =====================================
     function getATR14(prices) {
 
         if (prices.length < 15) return 0;
@@ -64,51 +69,57 @@
         return total / 14;
     }
 
-    // =========================
-    // ANALYZE
-    // =========================
+    // =====================================
+    // SIGNAL
+    // =====================================
     function analyze(prices) {
 
-        let momentum = getMomentum10(prices);
+        const momentum = getMomentum10(prices);
 
-        let atr = getATR14(prices);
+        const atr = getATR14(prices);
 
         if (momentum > 0 && atr > 0.0002) {
 
             return {
-                signal: "🟢 BUY",
-                confidence: 80
+                signal: "BUY",
+                emoji: "🟢",
+                color: "#00ff95",
+                confidence: 87
             };
         }
 
         if (momentum < 0 && atr > 0.0002) {
 
             return {
-                signal: "🔴 SELL",
-                confidence: 80
+                signal: "SELL",
+                emoji: "🔴",
+                color: "#ff4d67",
+                confidence: 87
             };
         }
 
         return {
-            signal: "⚠️ WAIT",
+            signal: "WAIT",
+            emoji: "🟡",
+            color: "#ffd54f",
             confidence: 40
         };
     }
 
-    // =========================
-    // CLICK BUY
-    // =========================
+    // =====================================
+    // AUTO CLICK BUY
+    // =====================================
     function clickBuy() {
 
-        let elements = document.querySelectorAll("*");
+        const elements = document.querySelectorAll("button, div, span");
 
         for (let el of elements) {
 
             let t = (el.innerText || "").toLowerCase();
 
             if (
-                t.includes("call") ||
                 t.includes("buy") ||
+                t.includes("call") ||
                 t.includes("up")
             ) {
 
@@ -121,20 +132,20 @@
         }
     }
 
-    // =========================
-    // CLICK SELL
-    // =========================
+    // =====================================
+    // AUTO CLICK SELL
+    // =====================================
     function clickSell() {
 
-        let elements = document.querySelectorAll("*");
+        const elements = document.querySelectorAll("button, div, span");
 
         for (let el of elements) {
 
             let t = (el.innerText || "").toLowerCase();
 
             if (
-                t.includes("put") ||
                 t.includes("sell") ||
+                t.includes("put") ||
                 t.includes("down")
             ) {
 
@@ -147,75 +158,151 @@
         }
     }
 
-    // =========================
-    // START
-    // =========================
-    setTimeout(() => {
+    // =====================================
+    // UPDATE PANEL
+    // =====================================
+    function updatePanel() {
 
-        setInterval(() => {
+        const prices = getPrices();
 
-            let prices = getPrices();
+        if (prices.length < 20) {
 
-            if (prices.length < 20) {
+            box.innerHTML = `<div style="text-align:center;">
 
-                box.innerHTML = "⏳ Loading prices...";
+                    <div style="font-size:18px;font-weight:bold;color:#00e5ff;">
+                        MOMO ATR PRO
+                    </div>
 
-                return;
-            }
+                    <div style="margin-top:20px;font-size:14px;color:#aaa;">
+                        ⏳ Waiting market data...
+                    </div>
 
-            let result = analyze(prices);
+                </div>
+            ;
 
-            let momentum = getMomentum10(prices);
+            return;
+        }
 
-            let atr = getATR14(prices);
+        const result = analyze(prices);
 
-            // =========================
-            // DISPLAY
-            // =========================
-            box.innerHTML = `
-                <b style="color:#00e5ff;">
-                    MOMO + ATR
-                </b>
-                <br><br>
+        const momentum = getMomentum10(prices);
 
-                ${result.signal}
-                <br>
+        const atr = getATR14(prices);
 
-                Confidence: ${result.confidence}%
-                <br><br>MOM: ${momentum.toFixed(5)}
-                <br>
+        const lastPrice = prices[prices.length - 1];
 
-                ATR: ${atr.toFixed(5)}
-                <br><br>
+        box.innerHTML = 
 
-                <button id="buyBtn">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+
+                <div>
+                    <div style="font-size:18px;font-weight:bold;color:#00e5ff;">
+                        MOMO ATR PRO
+                    </div>
+
+                    <div style="font-size:11px;color:#888;">
+                        Smart Signal Scanner
+                    </div>
+                </div>
+
+                <div style="width:12px;height:12px;border-radius:50%;background:${result.color};box-shadow:0 0 12px ${result.color};"></div>
+
+            </div>
+
+            <div style="margin-top:18px;padding:14px;border-radius:14px;background:rgba(255,255,255,0.04);text-align:center;">
+
+                <div style="font-size:30px;">
+                    ${result.emoji}
+                </div>
+
+                <div style="font-size:26px;font-weight:bold;color:${result.color};margin-top:5px;">
+                    ${result.signal}
+                </div>
+
+                <div style="margin-top:6px;color:#bbb;font-size:13px;">
+                    Confidence ${result.confidence}%
+                </div>
+
+            </div>
+
+            <div style="margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+
+                <div style="background:rgba(255,255,255,0.04);padding:10px;border-radius:12px;">
+                    <div style="font-size:11px;color:#888;">Momentum</div>
+                    <div style="font-size:16px;font-weight:bold;">
+                        ${momentum.toFixed(5)}
+                    </div>
+                </div>
+
+                <div style="background:rgba(255,255,255,0.04);padding:10px;border-radius:12px;">
+                    <div style="font-size:11px;color:#888;">ATR 14</div>
+                    <div style="font-size:16px;font-weight:bold;">
+                        ${atr.toFixed(5)}
+                    </div>
+                </div>
+
+            </div>
+
+            <div style="margin-top:10px;background:rgba(255,255,255,0.04);padding:10px;border-radius:12px;">
+                <div style="font-size:11px;color:#888;">Last Price</div>
+                <div style="font-size:17px;font-weight:bold;color:white;">
+                    ${lastPrice}
+                </div>
+            </div>
+
+            <div style="display:flex;gap:10px;margin-top:18px;">
+
+                <button id="buyBtn"
+                    style="
+                        flex:1;
+                        border:none;
+                        padding:12px;
+                        border-radius:12px;
+                        background:#00c853;
+                        color:white;
+                        font-weight:bold;
+                        cursor:pointer;
+                    ">
                     BUY
                 </button>
 
-                <button id="sellBtn">
+                <button id="sellBtn"
+                    style="
+                        flex:1;
+                        border:none;
+                        padding:12px;
+                        border-radius:12px;
+                        background:#ff1744;
+                        color:white;
+                        font-weight:bold;
+                        cursor:pointer;
+                    ">
                     SELL
                 </button>
-            `;
 
-            // =========================
-            // BUTTON EVENTS
-            // =========================
-            let buyBtn = document.getElementById("buyBtn");
+            </div>
 
-            let sellBtn = document.getElementById("sellBtn");
+        `;
 
-            if (buyBtn) {
+        const buyBtn = document.getElementById("buyBtn");
+        const sellBtn = document.getElementById("sellBtn");
 
-                buyBtn.onclick = clickBuy;
-            }
+        if (buyBtn) {
+            buyBtn.onclick = clickBuy;
+        }if (sellBtn) {
+            sellBtn.onclick = clickSell;
+        }
+    }
 
-            if (sellBtn) {
+    // =====================================
+    // START ENGINE
+    // =====================================
+    setTimeout(() => {
 
-                sellBtn.onclick = clickSell;
-            }
+        updatePanel();
 
-        }, 1200);
+        setInterval(updatePanel, 1200);
 
-    }, 3000);
+    }, 2500);
 
 })();

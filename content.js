@@ -1,74 +1,71 @@
-let box = document.createElement("div");
-box.style.position = "fixed";
-box.style.top = "20px";
-box.style.right = "20px";
-box.style.padding = "12px";
-box.style.background = "#111";
-box.style.color = "#fff";
-box.style.fontSize = "18px";
-box.style.zIndex = "999999";
-box.style.borderRadius = "10px";
-box.innerText = "Analyse...";
-document.body.appendChild(box);
+// marteau
+        if (isHammer(c3)) {
+            return {
+                signal: "🟢 BUY",
+                confidence: 78,
+                reason: "Hammer"
+            };
+        }
 
-// 🔍 chercher valeurs numériques visibles
-function getPrices() {
-    let text = document.body.innerText;
+        if (isBearHammer(c3)) {
+            return {
+                signal: "🔴 SELL",
+                confidence: 78,
+                reason: "Shooting star"
+            };
+        }
 
-    let matches = text.match(/\d+\.\d+/g);
-    if (!matches) return [];
+        // engulfing
+        if (isBullishEngulfing(c2, c3)) {
+            return {
+                signal: "🟢 BUY",
+                confidence: 82,
+                reason: "Bullish engulfing"
+            };
+        }
 
-    return matches.slice(-20).map(Number);
-}
+        if (isBearishEngulfing(c2, c3)) {
+            return {
+                signal: "🔴 SELL",
+                confidence: 82,
+                reason: "Bearish engulfing"
+            };
+        }
 
-// 📈 tendance simple
-function trend(prices) {
-    if (prices.length < 5) return "FLAT";
-
-    let first = prices[0];
-    let last = prices[prices.length - 1];
-
-    if (last > first) return "UP";
-    if (last < first) return "DOWN";
-    return "FLAT";
-}
-
-// ⚡ momentum (vitesse)
-function momentum(prices) {
-    if (prices.length < 3) return 0;
-
-    let a = prices[prices.length - 3];
-    let b = prices[prices.length - 2];
-    let c = prices[prices.length - 1];
-
-    return (c - b) + (b - a);
-}
-
-// 🎯 signal intelligent
-function signal(prices) {
-    let t = trend(prices);
-    let m = momentum(prices);
-
-    if (t === "UP" && m > 0) return "🟢 BUY";
-    if (t === "DOWN" && m < 0) return "🔴 SELL";
-
-    return "⚠️ WAIT";
-}
-
-// 🔄 loop
-setInterval(() => {
-    let prices = getPrices();
-
-    if (prices.length === 0) {
-        box.innerText = "❌ No data";
-        return;
+        return {
+            signal: "⚠ WAIT",
+            confidence: 45,
+            reason: "No setup"
+        };
     }
 
-    let s = signal(prices);
+    setInterval(() => {
+        let prices = getPrices();
 
-    box.innerText =
-        "Momentum AI\n" +
-        s + "\n" +
-        "Price: " + prices[prices.length - 1];
+        if (!prices.length) {
+            box.innerHTML = "❌ No data";
+            return;
+        }
 
-}, 2000);
+        let candles = buildCandles(prices);
+        let result = analyze(candles);
+        let current = prices[prices.length - 1];
+
+        box.innerHTML = 
+            <b>BOUGIE AI PRO</b><br>
+            ${result.signal}<br>
+            ${result.confidence}%<br>
+            <small>${result.reason}</small><br>
+            <small>${current}</small>
+        ;
+
+        if (
+            result.signal !== "⚠ WAIT" &&
+            result.confidence >= 80 &&
+            lastSignal !== result.signal
+        ) {
+            navigator.vibrate?.([200, 100, 200]);
+            lastSignal = result.signal;
+        }
+    }, 1500);
+})();

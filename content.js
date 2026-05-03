@@ -2,10 +2,6 @@
     if (window.MOMO_RSI_RUNNING) return;
     window.MOMO_RSI_RUNNING = true;
 
-    let lastSignal = "";
-    let lastTradeTime = 0;
-
-    // 🎯 UI BOX
     let box = document.createElement("div");
     box.style.position = "fixed";
     box.style.bottom = "90px";
@@ -20,7 +16,6 @@
     box.style.textAlign = "center";
     document.body.appendChild(box);
 
-    // 📥 GET PRICES
     function getPrices() {
         let text = document.body.innerText || "";
         let matches = text.match(/\b\d+\.\d{3,5}\b/g);
@@ -28,13 +23,11 @@
         return matches.slice(-100).map(Number);
     }
 
-    // 📈 MOMENTUM 10
     function getMomentum10(prices) {
         if (prices.length < 11) return 0;
         return prices[prices.length - 1] - prices[prices.length - 11];
     }
 
-    // 📊 RSI 14
     function getRSI14(prices) {
         if (prices.length < 15) return 50;
 
@@ -53,61 +46,45 @@
         return 100 - (100 / (1 + rs));
     }
 
-    // 🧠 ANALYSE SIMPLE
     function analyze(prices) {
         let momentum = getMomentum10(prices);
         let rsi = getRSI14(prices);
         let strength = Math.abs(momentum);
 
         if (momentum > 0 && rsi > 50 && rsi < 70 && strength > 0.0003) {
-            return { signal: "BUY", confidence: 80 };
+            return { signal: "🟢 BUY", confidence: 80 };
         }
 
         if (momentum < 0 && rsi < 50 && rsi > 30 && strength > 0.0003) {
-            return { signal: "SELL", confidence: 80 };
+            return { signal: "🔴 SELL", confidence: 80 };
         }
 
-        return { signal: "WAIT", confidence: 40 };
+        return { signal: "⚠️ WAIT", confidence: 40 };
     }
 
-    // 🔊 SON
-    function playBeep() {
-        let ctx = new (window.AudioContext || window.webkitAudioContext)();
-        let osc = ctx.createOscillator();
-        osc.type = "sine";
-        osc.frequency.value = 800;
-        osc.connect(ctx.destination);
-        osc.start();
-        setTimeout(() => osc.stop(), 150);
-    }
-
-    // 🎯 CLICK BUY
+    // (OPTIONNEL) boutons manuels
     function clickBuy() {
-        let buttons = document.querySelectorAll("button");
-        for (let btn of buttons) {
-            let t = btn.innerText.toLowerCase();
+        let elements = document.querySelectorAll("*");
+        for (let el of elements) {
+            let t = (el.innerText || "").toLowerCase();
             if (t.includes("call")  t.includes("buy")  t.includes("up")) {
-                btn.click();
-                return true;
+                el.click();
+                return;
             }
         }
-        return false;
     }
 
-    // 🎯 CLICK SELL
     function clickSell() {
-        let buttons = document.querySelectorAll("button");
-        for (let btn of buttons) {
-            let t = btn.innerText.toLowerCase();
+        let elements = document.querySelectorAll("*");
+        for (let el of elements) {
+            let t = (el.innerText || "").toLowerCase();
             if (t.includes("put")  t.includes("sell")  t.includes("down")) {
-                btn.click();
-                return true;
+                el.click();
+                return;
             }
         }
-        return false;
     }
 
-    // 🔁 LOOP
     setInterval(() => {
         let prices = getPrices();
 
@@ -119,29 +96,24 @@
         let result = analyze(prices);
         let rsi = getRSI14(prices);
         let momentum = getMomentum10(prices);
-        let now = Date.now();
 
         box.innerHTML = 
-            <b style="color:#00e5ff;">MOMO RSI PRO</b><br>
+            <b style="color:#00e5ff;">MOMO RSI MANUAL</b><br>
             ${result.signal}<br>
             ${result.confidence}%<br><br>
+
             RSI: ${rsi.toFixed(1)}<br>
-            MOM: ${momentum.toFixed(5)}
+            MOM: ${momentum.toFixed(5)}<br><br>
+
+            <button id="buyBtn" style="background:#00c853;color:white;border:none;padding:6px 10px;margin:2px;border-radius:6px;">BUY</button>
+            <button id="sellBtn" style="background:#d50000;color:white;border:none;padding:6px 10px;margin:2px;border-radius:6px;">SELL</button>
         ;
 
-        // 🤖 AUTO TRADE
-        if (
-            result.signal !== "WAIT" &&
-            result.signal !== lastSignal &&
-            now - lastTradeTime > 4000
-        ) {
-            if (result.signal === "BUY") clickBuy();
-            if (result.signal === "SELL") clickSell();
+        let buyBtn = document.getElementById("buyBtn");
+        let sellBtn = document.getElementById("sellBtn");
 
-            playBeep();
-            navigator.vibrate && navigator.vibrate([200, 100, 200]);lastSignal = result.signal;
-            lastTradeTime = now;
-        }
+        if (buyBtn) buyBtn.onclick = clickBuy;
+        if (sellBtn) sellBtn.onclick = clickSell;
 
     }, 1200);
 

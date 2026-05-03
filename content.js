@@ -39,10 +39,10 @@
             let low = Math.min(open, close);
 
             candles.push({
-                open: open,
-                close: close,
-                high: high,
-                low: low,
+                open,
+                close,
+                high,
+                low,
                 body: Math.abs(close - open),
                 upperWick: high - Math.max(open, close),
                 lowerWick: Math.min(open, close) - low,
@@ -55,10 +55,13 @@
     }
 
     function avgBody(candles) {
+        if (!candles.length) return 0;
         return candles.reduce((sum, c) => sum + c.body, 0) / candles.length;
     }
 
     function isRange(candles) {
+        if (candles.length < 6) return false;
+
         let recent = candles.slice(-6);
         let avg = avgBody(recent);
 
@@ -71,14 +74,15 @@
     }
 
     function isHammer(c) {
-        return c.lowerWick > c.body * 2;
+        return c && c.lowerWick > c.body * 2;
     }
 
     function isBearHammer(c) {
-        return c.upperWick > c.body * 2;
+        return c && c.upperWick > c.body * 2;
     }
 
     function isBullishEngulfing(prev, curr) {
+        if (!prev || !curr) return false;
         return (
             prev.bearish &&
             curr.bullish &&
@@ -88,6 +92,7 @@
     }
 
     function isBearishEngulfing(prev, curr) {
+        if (!prev || !curr) return false;
         return (
             prev.bullish &&
             curr.bearish &&
@@ -99,7 +104,7 @@
     function analyze(candles) {
         if (candles.length < 8) {
             return {
-                signal: "WAIT",
+                signal: "⚠️ WAIT",
                 confidence: 0,
                 reason: "Not enough data"
             };
@@ -107,7 +112,7 @@
 
         if (isRange(candles)) {
             return {
-                signal: "⚠ WAIT",
+                signal: "⚠️ WAIT",
                 confidence: 25,
                 reason: "Range market"
             };
@@ -138,17 +143,16 @@
                 confidence: 82,
                 reason: "Bullish engulfing"
             };
-        }
-
-        if (isBearishEngulfing(c2, c3)) {
+        }if (isBearishEngulfing(c2, c3)) {
             return {
                 signal: "🔴 SELL",
                 confidence: 82,
                 reason: "Bearish engulfing"
             };
         }
-return {
-            signal: "⚠ WAIT",
+
+        return {
+            signal: "⚠️ WAIT",
             confidence: 45,
             reason: "No setup"
         };
@@ -167,15 +171,15 @@ return {
         let current = prices[prices.length - 1];
 
         box.innerHTML = 
-           <b>BOUGIE AI PRO</b><br>
-           ${result.signal}<br>
-           ${result.confidence}%<br>
-          <small>${result.reason}</small><br>
-          <small>${current}</small>
-         ;
+            <b>BOUGIE AI PRO</b><br>
+            ${result.signal}<br>
+            ${result.confidence}%<br>
+            <small>${result.reason}</small><br>
+            <small>${current}</small>
+        ;
 
         if (
-            result.signal !== "⚠ WAIT" &&
+            result.signal !== "⚠️ WAIT" &&
             result.confidence >= 80 &&
             lastSignal !== result.signal
         ) {
@@ -184,5 +188,7 @@ return {
             }
             lastSignal = result.signal;
         }
+
     }, 1500);
+
 })();

@@ -31,15 +31,24 @@
     // =====================================
     function getPrices() {
 
-        const candles = document.querySelectorAll("canvas");
+        let prices = [];
 
-        let text = document.body.innerText || "";
+        const elements = document.querySelectorAll("div, span");
 
-        let matches = text.match(/\b\d+\.\d{3,5}\b/g);
+        for (let el of elements) {
 
-        if (!matches) return [];
+            const text = (el.innerText || "").trim();
 
-        return matches.slice(-120).map(Number);
+            if (/^\d+\.\d{3,5}$/.test(text)) {
+
+                prices.push(parseFloat(text));
+            }
+        }
+
+        // Remove duplicates
+        prices = [...new Set(prices)];
+
+        return prices.slice(-120);
     }
 
     // =====================================
@@ -53,7 +62,7 @@
     }
 
     // =====================================
-    // ATR
+    // ATR 14
     // =====================================
     function getATR14(prices) {
 
@@ -70,7 +79,7 @@
     }
 
     // =====================================
-    // SIGNAL
+    // SIGNAL ANALYSIS
     // =====================================
     function analyze(prices) {
 
@@ -107,7 +116,7 @@
     }
 
     // =====================================
-    // AUTO CLICK BUY
+    // CLICK BUY
     // =====================================
     function clickBuy() {
 
@@ -115,7 +124,7 @@
 
         for (let el of elements) {
 
-            let t = (el.innerText || "").toLowerCase();
+            const t = (el.innerText || "").toLowerCase();
 
             if (
                 t.includes("buy") ||
@@ -133,7 +142,7 @@
     }
 
     // =====================================
-    // AUTO CLICK SELL
+    // CLICK SELL
     // =====================================
     function clickSell() {
 
@@ -141,7 +150,7 @@
 
         for (let el of elements) {
 
-            let t = (el.innerText || "").toLowerCase();
+            const t = (el.innerText || "").toLowerCase();
 
             if (
                 t.includes("sell") ||
@@ -156,28 +165,37 @@
                 return;
             }
         }
-    }
-
-    // =====================================
+    }// =====================================
     // UPDATE PANEL
     // =====================================
     function updatePanel() {
 
         const prices = getPrices();
 
-        if (prices.length < 20) {
+        if (prices.length < 5) {
 
-            box.innerHTML = `<div style="text-align:center;">
+            box.innerHTML = 
 
-                    <div style="font-size:18px;font-weight:bold;color:#00e5ff;">
+                <div style="text-align:center;">
+
+                    <div style="
+                        font-size:20px;
+                        font-weight:bold;
+                        color:#00e5ff;
+                    ">
                         MOMO ATR PRO
                     </div>
 
-                    <div style="margin-top:20px;font-size:14px;color:#aaa;">
+                    <div style="
+                        margin-top:18px;
+                        color:#aaa;
+                        font-size:14px;
+                    ">
                         ⏳ Waiting market data...
                     </div>
 
                 </div>
+
             ;
 
             return;
@@ -191,66 +209,157 @@
 
         const lastPrice = prices[prices.length - 1];
 
-        box.innerHTML = 
+        // =====================================
+        // DISPLAY
+        // =====================================
+        box.innerHTML = `
 
-            <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div style="
+                display:flex;
+                justify-content:space-between;
+                align-items:center;
+            ">
 
                 <div>
-                    <div style="font-size:18px;font-weight:bold;color:#00e5ff;">
+
+                    <div style="
+                        font-size:20px;
+                        font-weight:bold;
+                        color:#00e5ff;
+                    ">
                         MOMO ATR PRO
                     </div>
 
-                    <div style="font-size:11px;color:#888;">
+                    <div style="
+                        font-size:11px;
+                        color:#888;
+                    ">
                         Smart Signal Scanner
                     </div>
+
                 </div>
 
-                <div style="width:12px;height:12px;border-radius:50%;background:${result.color};box-shadow:0 0 12px ${result.color};"></div>
+                <div style="
+                    width:12px;
+                    height:12px;
+                    border-radius:50%;
+                    background:${result.color};
+                    box-shadow:0 0 12px ${result.color};
+                "></div>
 
             </div>
 
-            <div style="margin-top:18px;padding:14px;border-radius:14px;background:rgba(255,255,255,0.04);text-align:center;">
+            <div style="
+                margin-top:18px;
+                padding:14px;
+                border-radius:14px;
+                background:rgba(255,255,255,0.04);
+                text-align:center;
+            ">
 
-                <div style="font-size:30px;">
+                <div style="font-size:32px;">
                     ${result.emoji}
                 </div>
 
-                <div style="font-size:26px;font-weight:bold;color:${result.color};margin-top:5px;">
+                <div style="
+                    font-size:28px;
+                    font-weight:bold;
+                    color:${result.color};
+                    margin-top:5px;
+                ">
                     ${result.signal}
                 </div>
 
-                <div style="margin-top:6px;color:#bbb;font-size:13px;">
+                <div style="
+                    margin-top:6px;
+                    color:#bbb;
+                    font-size:13px;
+                ">
                     Confidence ${result.confidence}%
                 </div>
 
             </div>
 
-            <div style="margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+            <div style="
+                margin-top:16px;
+                display:grid;
+                grid-template-columns:1fr 1fr;
+                gap:10px;
+            ">
 
-                <div style="background:rgba(255,255,255,0.04);padding:10px;border-radius:12px;">
-                    <div style="font-size:11px;color:#888;">Momentum</div>
-                    <div style="font-size:16px;font-weight:bold;">
+                <div style="
+                    background:rgba(255,255,255,0.04);
+                    padding:10px;
+                    border-radius:12px;
+                ">
+
+                    <div style="
+                        font-size:11px;
+                        color:#888;
+                    ">
+                        Momentum
+                    </div>
+
+                    <div style="
+                        font-size:16px;
+                        font-weight:bold;
+                    ">
                         ${momentum.toFixed(5)}
                     </div>
+
                 </div>
 
-                <div style="background:rgba(255,255,255,0.04);padding:10px;border-radius:12px;">
-                    <div style="font-size:11px;color:#888;">ATR 14</div>
-                    <div style="font-size:16px;font-weight:bold;">
+                <div style="
+                    background:rgba(255,255,255,0.04);
+                    padding:10px;
+                    border-radius:12px;
+                "><div style="
+                        font-size:11px;
+                        color:#888;
+                    ">
+                        ATR 14
+                    </div>
+
+                    <div style="
+                        font-size:16px;
+                        font-weight:bold;
+                    ">
                         ${atr.toFixed(5)}
                     </div>
+
                 </div>
 
             </div>
 
-            <div style="margin-top:10px;background:rgba(255,255,255,0.04);padding:10px;border-radius:12px;">
-                <div style="font-size:11px;color:#888;">Last Price</div>
-                <div style="font-size:17px;font-weight:bold;color:white;">
+            <div style="
+                margin-top:10px;
+                background:rgba(255,255,255,0.04);
+                padding:10px;
+                border-radius:12px;
+            ">
+
+                <div style="
+                    font-size:11px;
+                    color:#888;
+                ">
+                    Last Price
+                </div>
+
+                <div style="
+                    font-size:17px;
+                    font-weight:bold;
+                    color:white;
+                ">
                     ${lastPrice}
                 </div>
+
             </div>
 
-            <div style="display:flex;gap:10px;margin-top:18px;">
+            <div style="
+                display:flex;
+                gap:10px;
+                margin-top:18px;
+            ">
 
                 <button id="buyBtn"
                     style="
@@ -289,7 +398,9 @@
 
         if (buyBtn) {
             buyBtn.onclick = clickBuy;
-        }if (sellBtn) {
+        }
+
+        if (sellBtn) {
             sellBtn.onclick = clickSell;
         }
     }

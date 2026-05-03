@@ -167,12 +167,12 @@ return {
         let current = prices[prices.length - 1];
 
         box.innerHTML = 
-            <b>BOUGIE AI PRO</b><br>
-            ${result.signal}<br>
-            ${result.confidence}%<br>
-            <small>${result.reason}</small><br>
-            <small>${current}</small>
-        ;
+           <b>BOUGIE AI PRO</b><br>
+           ${result.signal}<br>
+           ${result.confidence}%<br>
+          <small>${result.reason}</small><br>
+          <small>${current}</small>
+         ;
 
         if (
             result.signal !== "⚠ WAIT" &&

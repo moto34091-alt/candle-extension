@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "MOMO RSI PRO (Pocket Option)",
-  "version": "1.2",
-  "description": "Momentum + RSI Auto Trader",
+  "name": "MOMO RSI MANUAL",
+  "version": "1.3",
+  "description": "Momentum + RSI (Manual Trading Only)",
   "permissions": ["activeTab", "scripting"],
   "host_permissions": ["https://pocketoption.com/*"],
   "content_scripts": [

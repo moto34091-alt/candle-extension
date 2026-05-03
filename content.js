@@ -147,8 +147,6 @@
                 reason: "Bearish engulfing"
             };
         }
-
-D-FLAM Beatz, [03/05/2026 12:51]
 return {
             signal: "⚠ WAIT",
             confidence: 45,

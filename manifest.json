@@ -1,0 +1,12 @@
+{
+  "manifest_version": 3,
+  "name": "Candle Signal Pro",
+  "version": "1.0",
+  "permissions": ["activeTab", "scripting"],
+  "content_scripts": [
+    {
+      "matches": ["*://*.pocketoption.com/*"],
+      "js": ["content.js"]
+    }
+  ]
+}

@@ -1,13 +1,15 @@
 {
   "manifest_version": 3,
-  "name": "BOUGIE AI PRO",
-  "version": "1.0",
-  "description": "Trading helper overlay",
+  "name": "MOMO RSI PRO (Pocket Option)",
+  "version": "1.2",
+  "description": "Momentum + RSI Auto Trader",
+  "permissions": ["activeTab", "scripting"],
+  "host_permissions": ["https://pocketoption.com/*"],
   "content_scripts": [
     {
-      "matches": ["<all_urls>"],
-      "js": ["content.js"]
+      "matches": ["https://pocketoption.com/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
     }
-  ],
-  "permissions": ["activeTab"]
+  ]
 }

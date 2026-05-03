@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "MOMO RSI CLEAN",
+  "name": "MOMO ATR 14 (Manual)",
   "version": "1.0",
-  "description": "Momentum + RSI Manual",
+  "description": "Momentum + ATR 14 - Manual Trading Tool",
   "permissions": ["activeTab", "scripting"],
   "host_permissions": ["https://pocketoption.com/*"],
   "content_scripts": [
